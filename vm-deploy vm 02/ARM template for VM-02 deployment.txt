@@ -1,0 +1,87 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "resources": [
+    {
+      "type": "Microsoft.Network/publicIPAddresses",
+      "apiVersion": "2023-09-01",
+      "name": "VM-02-pip",
+      "location": "southindia",
+      "sku": {
+        "name": "Standard"
+      },
+      "properties": {
+        "publicIPAllocationMethod": "Static"
+      }
+    },
+    {
+      "type": "Microsoft.Network/networkInterfaces",
+      "apiVersion": "2023-09-01",
+      "name": "VM-02-nic",
+      "location": "southindia",
+      "dependsOn": [
+        "Microsoft.Network/publicIPAddresses/VM-02-pip"
+      ],
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "subnet": {
+                "id": "/subscriptions/80ea84e8-afce-4851-928a-9e2219724c69/resourceGroups/1-0448b028-playground-sandbox/providers/Microsoft.Network/virtualNetworks/vnet-infra-01/subnets/vm-subnet"
+              },
+              "privateIPAllocationMethod": "Dynamic",
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', 'VM-02-pip')]"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines",
+      "apiVersion": "2024-11-01",
+      "name": "VM-02",
+      "location": "southindia",
+      "dependsOn": [
+        "Microsoft.Network/networkInterfaces/VM-02-nic"
+      ],
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "Standard_D2s_v3"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "canonical",
+            "offer": "ubuntu-24_04-lts",
+            "sku": "server",
+            "version": "latest"
+          },
+          "osDisk": {
+            "createOption": "FromImage",
+            "managedDisk": {
+              "storageAccountType": "StandardSSD_LRS"
+            }
+          }
+        },
+"osProfile": {
+  "computerName": "VM-02",
+  "adminUsername": "azureuser",
+  "adminPassword": "Azure@123456!",
+  "customData": "IyEvYmluL2Jhc2gKc2V0IC1lCgphcHQtZ2V0IHVwZGF0ZSAteQphcHQtZ2V0IGluc3RhbGwgLXkgbmdpbngKCnN5c3RlbWN0bCBlbmFibGUgbmdpbngKc3lzdGVtY3RsIHN0YXJ0IG5naW54CgpIT1NUTkFNRT0kKGhvc3RuYW1lKQpXRUJST09UPS92YXIvd3d3L2h0bWwKCmlmIGVjaG8gIiRIT1NUTkFNRSIgfCBncmVwIC1xICIwMSI7IHRoZW4KICBlY2hvICI8aDE+QVBQMSAtICRIT1NUTkFNRTwvaDE+IiA+ICRXRUJST09UL2FwcDEuaHRtbAplbGlmIGVjaG8gIiRIT1NUTkFNRSIgfCBncmVwIC1xICIwMiI7IHRoZW4KICBlY2hvICI8aDE+QVBQMiAtICRIT1NUTkFNRTwvaDE+IiA+ICRXRUJST09UL2FwcDIuaHRtbAplbHNlCiAgZWNobyAiPGgxPkRlZmF1bHQgLSAkSE9TVE5BTUU8L2gxPiIgPiAkV0VCUk9PVC9pbmRleC5odG1sCmZpCgpzeXN0ZW1jdGwgcmVzdGFydCBuZ2lueA==",
+  "linuxConfiguration": {
+    "disablePasswordAuthentication": false
+  }
+},
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', 'VM-02-nic')]"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}
