@@ -1,0 +1,19 @@
+Change only these names:
+
+From	To
+VM-02	VM-01
+VM-02-pip	VM-01-pip
+VM-02-nic	VM-01-nic
+computerName	VM-01
+
+cloud-init already detects 01 → serves APP1 ✔️
+
+For VM-03
+
+Same rule:
+
+From	To
+VM-02	VM-03
+VM-02-pip	VM-03-pip
+VM-02-nic	VM-03-nic
+computerName	VM-03
